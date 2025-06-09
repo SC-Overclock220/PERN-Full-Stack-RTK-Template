@@ -1,5 +1,8 @@
-import React from 'react'
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify'
+import { signUpFunction } from '../Slices/AuthSlice';
 const countries = [
     { code: 'AF', name: 'Afghanistan', flag: '🇦🇫' },
     { code: 'AL', name: 'Albania', flag: '🇦🇱' },
@@ -238,38 +241,78 @@ const countries = [
     { code: 'ZW', name: 'Zimbabwe', flag: '🇿🇼' }
 ];
 const SignUp = () => {
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const [formData, setFormData] = useState({
+
+        firstname: "", lastname: "", email: "", password: "", country: "", username: ""
+    });
+
+    const { loading, error } = useSelector((state) => ({ ...state.auth }))
+
+
+    useEffect(() => { error && toast.error(error) }, [error])
+
+
+    const handleInputChange = (e) => {
+
+
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+    }
+
+    const handleSubmit = (e) => {
+
+
+        e.preventDefault();
+        console.log(formData);
+
+
+        const { firstname, lastname, username, email, password, country } = formData;
+
+        if (!firstname || !lastname || !username || !password || !country)
+            return toast.error(`None Of The Required Fields Can Be Empty`);
+
+
+
+        dispatch(signUpFunction({ formData, navigate, toast }))
+    }
+
+
     return (
         <div className=' w-full sm:w-[80%] md:w-[50%] lg:w-[40%] xl:w-[30%] mx-auto p-4'>
 
             <h3 className='text-lg md:text-xl lg:text-2xl xl:text-3xl font-medium md:font-semibold:font-bold text-center'>Sign Up</h3>
 
-            <form className='flex flex-col space-y-4'>
+            <form className='flex flex-col space-y-4' onSubmit={handleSubmit}>
 
                 <div className=' py-2 flex flex-col space-y-2'>
 
                     <label>First Name</label>
-                    <input type='text' placeholder='Firstname' className='w-full py-2 px-2 border border-gray-600 rounded-md focus:outline-none  focus:ring-2 focus:ring-emerald-400' />
+                    <input type='text' placeholder='Firstname' className='w-full py-2 px-2 border border-gray-600 rounded-md focus:outline-none  focus:ring-2 focus:ring-emerald-400' onChange={handleInputChange} name='firstname' value={formData.firstname} />
 
 
                 </div>
                 <div className=' py-2 flex flex-col space-y-2'>
 
                     <label>Last Name</label>
-                    <input type='text' placeholder='Lastname' className='w-full py-2 px-2 border border-gray-600 rounded-md focus:outline-none  focus:ring-2 focus:ring-emerald-400' />
+                    <input type='text' placeholder='Lastname' className='w-full py-2 px-2 border border-gray-600 rounded-md focus:outline-none  focus:ring-2 focus:ring-emerald-400' onChange={handleInputChange} name='lastname' value={formData.lastname} />
 
 
                 </div>
                 <div className=' py-2 flex flex-col space-y-2'>
 
-                    <label>Username</label>
-                    <input type='text' placeholder='Username' className='w-full py-2 px-2 border border-gray-600 rounded-md focus:outline-none  focus:ring-2 focus:ring-emerald-400' />
+                    <label htmlFor='username'>Username</label>
+                    <input type='text' placeholder='Username' className='w-full py-2 px-2 border border-gray-600 rounded-md focus:outline-none  focus:ring-2 focus:ring-emerald-400' onChange={handleInputChange} value={formData.username} name='username' id='username' />
 
 
                 </div>
                 <div className=' py-2 flex flex-col space-y-2'>
 
-                    <label>Email</label>
-                    <input type='email' className='w-full py-2 px-2 border border-gray-600 rounded-md focus:outline-none  focus:ring-2 focus:ring-emerald-400' placeholder='Email' />
+                    <label htmlFor='email'>Email</label>
+                    <input type='email' className='w-full py-2 px-2 border border-gray-600 rounded-md focus:outline-none  focus:ring-2 focus:ring-emerald-400' placeholder='Email' onChange={handleInputChange} value={formData.email} name='email' id='email' />
 
 
                 </div>
@@ -282,8 +325,7 @@ const SignUp = () => {
                         name="country"
                         id="country"
                         className='w-full py-2 px-2 border border-gray-600 rounded-md focus:outline-none  focus:ring-2 focus:ring-emerald-400'
-
-                        required
+                        required onChange={handleInputChange} value={formData.country}
 
                     >
                         <option value="" disabled>
@@ -313,8 +355,8 @@ const SignUp = () => {
 
                 <div className=' py-2 flex flex-col space-y-2'>
 
-                    <label>Password</label>
-                    <input type='text' className='w-full py-2 px-2 border border-gray-600 rounded-md focus:outline-none  focus:ring-2 focus:ring-emerald-400' placeholder='Password' />
+                    <label htmlFor='password'>Password</label>
+                    <input type='password' className='w-full py-2 px-2 border border-gray-600 rounded-md focus:outline-none  focus:ring-2 focus:ring-emerald-400' placeholder='Password' onChange={handleInputChange} value={formData.password} name='password' id='password' />
 
 
                 </div>
@@ -322,7 +364,7 @@ const SignUp = () => {
                 <div className=' py-2 flex flex-col space-y-2'>
 
 
-                    <button className="btn bg-emerald-500" type='submit'>Sign Up</button>
+                    <button className="btn bg-emerald-500" type='submit'>{loading && <span className="loading loading-dots loading-md"></span>} Sign Up</button>
 
 
                 </div>

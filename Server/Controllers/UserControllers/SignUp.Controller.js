@@ -11,6 +11,9 @@ const signup = async (req, res) => {
     const { firstname, lastname, username, password, country, email } = req.body;
 
 
+    console.log(firstname, lastname, username, password, country, email);
+
+
     if (!firstname || !lastname || !username || !password || !country || !email)
         return res.status(400).json({ message: `None of the required fields can be empty`, success: false })
 

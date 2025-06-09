@@ -1,12 +1,16 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { Link, useLocation } from 'react-router-dom'
+import { logoutFunction } from '../Slices/AuthSlice';
 
 const Navbar = () => {
+
+    const dispatch = useDispatch();
+    const { user } = useSelector((state) => ({ ...state.auth }))
     return (
         <>
 
-
-            <div className="navbar bg-base-100 shadow-sm">
+            {user ? <div className="navbar bg-base-100 shadow-sm">
                 <div className="flex-1">
                     <Link className="btn btn-ghost text-md lg:text-xl" to="/">RTK PERN CRUD</Link>
                 </div>
@@ -31,11 +35,24 @@ const Navbar = () => {
                                 </Link>
                             </li>
                             <li><a>Settings</a></li>
-                            <li><a>Logout</a></li>
+                            <li onClick={() => dispatch(logoutFunction())}><a>Logout</a></li>
                         </ul>
                     </div>
                 </div>
-            </div>
+            </div> : <div className="navbar bg-base-100 shadow-sm">
+                <div className="flex-1">
+                    <a className="btn btn-ghost text-xl">daisyUI</a>
+                </div>
+                <div className="flex-none">
+                    <ul className="menu menu-horizontal px-1">
+                        <li><Link to="/login">Login</Link></li>
+                        <li><Link to="/signup">Sign Up</Link></li>
+                    </ul>
+                </div>
+            </div>}
+
+
+
         </>
     )
 }
